@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 
 struct MascotaVM {
+    var id: String
     var nombre: String
     var especie: String
     var raza: String
