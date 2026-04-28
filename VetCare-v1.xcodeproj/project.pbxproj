@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		AEA994112F9FC77A0009896E /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = AEA994102F9FC77A0009896E /* FirebaseAuth */; };
+		AEA994132F9FC77A0009896E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = AEA994122F9FC77A0009896E /* FirebaseFirestore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		AEC4C2932F8FFCCA00C08A05 /* VetCare-v1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "VetCare-v1.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +41,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AEA994112F9FC77A0009896E /* FirebaseAuth in Frameworks */,
+				AEA994132F9FC77A0009896E /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +85,8 @@
 			);
 			name = "VetCare-v1";
 			packageProductDependencies = (
+				AEA994102F9FC77A0009896E /* FirebaseAuth */,
+				AEA994122F9FC77A0009896E /* FirebaseFirestore */,
 			);
 			productName = "VetCare-v1";
 			productReference = AEC4C2932F8FFCCA00C08A05 /* VetCare-v1.app */;
@@ -107,6 +116,9 @@
 			);
 			mainGroup = AEC4C28A2F8FFCCA00C08A05;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AEA9940F2F9FC77A0009896E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AEC4C2942F8FFCCA00C08A05 /* Products */;
 			projectDirPath = "";
@@ -349,6 +361,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		AEA9940F2F9FC77A0009896E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.12.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AEA994102F9FC77A0009896E /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AEA9940F2F9FC77A0009896E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		AEA994122F9FC77A0009896E /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AEA9940F2F9FC77A0009896E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = AEC4C28B2F8FFCCA00C08A05 /* Project object */;
 }
