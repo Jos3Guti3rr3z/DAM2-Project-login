@@ -10,8 +10,11 @@ protocol FormularioMascotaDelegate: AnyObject {
 }
 
 import UIKit
+import FirebaseFirestore
 
 class FormularioMascotaViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    let db = Firestore.firestore()
 
     weak var delegate: FormularioMascotaDelegate?
     
@@ -48,22 +51,48 @@ class FormularioMascotaViewController: UIViewController, UIImagePickerController
     @IBAction func guardarMascota(_ sender: Any) {
         print("💾 BOTÓN GUARDAR PRESIONADO")
         
-        let mascota = MascotaVM(
-                nombre: txtNombreMascota.text ?? "",
-                especie: txtEspecieMascota.text ?? "",
-                raza: txtRazaMascota.text ?? "",
-                peso: txtPesoMascota.text ?? "",
-                edad: txtEdadMascota.text ?? "",
-                sexo: txtSexoMascota.text ?? "",
-                alergias: txtAlergiasMascota.text ?? "",
-                imagen: imagenMascota.image
-            )
-
-        print("📦 MASCOTA CREADA:", mascota.nombre)
+        let correo = UserDefaults.standard.string(forKey: "correo") ?? "sin_correo"
         
-            delegate?.agregarMascota(mascota)
-
-            navigationController?.popViewController(animated: true)
+        let data: [String: Any] = [
+            "nombre": txtNombreMascota.text ?? "",
+                "especie": txtEspecieMascota.text ?? "",
+                "raza": txtRazaMascota.text ?? "",
+                "peso": txtPesoMascota.text ?? "",
+                "edad": txtEdadMascota.text ?? "",
+                "sexo": txtSexoMascota.text ?? "",
+                "alergias": txtAlergiasMascota.text ?? "",
+                "correoDueno": correo,
+                "createdAt": Timestamp()
+            ]
+            
+            print("📤 Enviando a Firestore...")
+        
+        db.collection("mascotas").addDocument(data: data) { error in
+               if let error = error {
+                   print("❌ Error al guardar:", error.localizedDescription)
+                   return
+               }
+               
+               print("✅ Guardado en Firestore")
+               
+               // Mantienes tu lógica local (opcional)
+               let mascota = MascotaVM(
+                nombre: self.txtNombreMascota.text ?? "",
+                   especie: self.txtEspecieMascota.text ?? "",
+                   raza: self.txtRazaMascota.text ?? "",
+                   peso: self.txtPesoMascota.text ?? "",
+                   edad: self.txtEdadMascota.text ?? "",
+                   sexo: self.txtSexoMascota.text ?? "",
+                   alergias: self.txtAlergiasMascota.text ?? "",
+                   imagen: self.imagenMascota.image
+               )
+               
+               self.delegate?.agregarMascota(mascota)
+               
+               DispatchQueue.main.async {
+                   self.navigationController?.popViewController(animated: true)
+               }
+           }
     }
     
     @IBOutlet weak var txtNombreMascota: UITextField!
