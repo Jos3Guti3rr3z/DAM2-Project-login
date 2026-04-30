@@ -10,35 +10,67 @@ import FirebaseAuth
 
 class PerfilViewController: UIViewController {
 
+    @IBOutlet weak var nombreLabel: UILabel!
+  
+    
+    @IBOutlet weak var correoLabel: UILabel!
+    
+    
+    @IBOutlet weak var telefonoLabel: UILabel!
+    
+    
+    @IBOutlet weak var direccionLbel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        cargarDatos()
+        
 
         // Do any additional setup after loading the view.
     }
     
-    @IBAction func cerrar(_ sender: UIButton) {
-        let firebaseAuth = Auth.auth()
-            do {
-                try firebaseAuth.signOut()
-                
-                // Regresar a la pantalla de Login o Welcome
-                // Ejemplo: Si usas un Navigation Controller
-                UserDefaults.standard.bool(forKey: "login")
-                self.navigationController?.popToRootViewController(animated: true)
-                
-            } catch let signOutError as NSError {
-                print("Error al cerrar sesión: %@", signOutError)
-            }
-    }
     
-    /*
-    // MARK: - Navigation
+    func cargarDatos() {
+            nombreLabel.text = UserDefaults.standard.string(forKey: "nombres") ?? ""
+            correoLabel.text = UserDefaults.standard.string(forKey: "correo") ?? ""
+            telefonoLabel.text = UserDefaults.standard.string(forKey: "numero") ?? ""
+            direccionLbel.text = UserDefaults.standard.string(forKey: "direccion") ?? ""
+        }
+    
+    @IBAction func cerrar(_ sender: UIButton) {
+        openAlert()
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
+}
 
+    func openAlert() {
+         let alert = UIAlertController(
+             title: "¿Estás seguro de cerrar sesión?",
+             message: "Todos tus datos serán eliminados",
+             preferredStyle: .alert
+         )
+
+         let actionAceptar = UIAlertAction(title: "Aceptar", style: .default) { _ in
+             
+             let firebaseAuth = Auth.auth()
+             
+             do {
+                 try firebaseAuth.signOut()
+                 
+                 // 🔹 Limpiar estado de login
+                 UserDefaults.standard.set(false, forKey: "login")
+                 
+                 self.navigationController?.popToRootViewController(animated: true)
+                 
+             } catch let signOutError as NSError {
+                 print("Error al cerrar sesión: %@", signOutError)
+             }
+         }
+
+         let actionCancelar = UIAlertAction(title: "Cancelar", style: .cancel)
+
+         alert.addAction(actionAceptar)
+         alert.addAction(actionCancelar)
+
+         present(alert, animated: true)
+     }
 }
