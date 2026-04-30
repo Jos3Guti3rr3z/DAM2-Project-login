@@ -30,6 +30,16 @@ class MascotaViewController: UIViewController, UITableViewDataSource, UITableVie
                 return cell
     }
     
+    func tableView(_ tableView: UITableView,
+                   commit editingStyle: UITableViewCell.EditingStyle,
+                   forRowAt indexPath: IndexPath) {
+        print("🧪 Swipe detectado")
+        
+        if editingStyle == .delete {
+            let mascota = mascotas[indexPath.row]
+            eliminarMascota(id: mascota.id)
+        }
+    }
 
     var mascotas: [MascotaVM] = []
     
@@ -89,9 +99,10 @@ class MascotaViewController: UIViewController, UITableViewDataSource, UITableVie
                         alergias: data["alergias"] as? String ?? "",
                         imagen: nil
                     )
-
+                    print("ID mascota:", doc.documentID)
                     self.mascotas.append(mascota)
                 }
+                
 
                 DispatchQueue.main.async {
                     self.tableViewMascota.reloadData()
@@ -100,6 +111,7 @@ class MascotaViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func eliminarMascota(id: String) {
+        print("Eliminando ID:", id)
         db.collection("mascotas").document(id).delete { error in
             if let error = error {
                 print("❌ Error al eliminar:", error.localizedDescription)

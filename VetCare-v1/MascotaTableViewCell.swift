@@ -27,4 +27,6 @@ class MascotaTableViewCell: UITableViewCell {
     @IBOutlet weak var especieMascotaLabel: UILabel!
     
     @IBOutlet weak var edadMascotaLabel: UILabel!
+    
+    
 }

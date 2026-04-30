@@ -61,38 +61,38 @@ class FormularioMascotaViewController: UIViewController, UIImagePickerController
                 "edad": txtEdadMascota.text ?? "",
                 "sexo": txtSexoMascota.text ?? "",
                 "alergias": txtAlergiasMascota.text ?? "",
-                "correoDueno": correo,
+                "duenio": correo,
                 "createdAt": Timestamp()
             ]
             
             print("📤 Enviando a Firestore...")
         
-        db.collection("mascotas").addDocument(data: data) { error in
-               if let error = error {
-                   print("❌ Error al guardar:", error.localizedDescription)
-                   return
-               }
-               
-               print("✅ Guardado en Firestore")
-               
-               // Mantienes tu lógica local (opcional)
-               let mascota = MascotaVM(
+        let docRef = db.collection("mascotas").document()
+
+        docRef.setData(data) { error in
+            if let error = error {
+                print("❌ Error:", error.localizedDescription)
+                return
+            }
+
+            let mascota = MascotaVM(
+                id: docRef.documentID,
                 nombre: self.txtNombreMascota.text ?? "",
-                   especie: self.txtEspecieMascota.text ?? "",
-                   raza: self.txtRazaMascota.text ?? "",
-                   peso: self.txtPesoMascota.text ?? "",
-                   edad: self.txtEdadMascota.text ?? "",
-                   sexo: self.txtSexoMascota.text ?? "",
-                   alergias: self.txtAlergiasMascota.text ?? "",
-                   imagen: self.imagenMascota.image
-               )
-               
-               self.delegate?.agregarMascota(mascota)
-               
-               DispatchQueue.main.async {
-                   self.navigationController?.popViewController(animated: true)
-               }
-           }
+                especie: self.txtEspecieMascota.text ?? "",
+                raza: self.txtRazaMascota.text ?? "",
+                peso: self.txtPesoMascota.text ?? "",
+                edad: self.txtEdadMascota.text ?? "",
+                sexo: self.txtSexoMascota.text ?? "",
+                alergias: self.txtAlergiasMascota.text ?? "",
+                imagen: self.imagenMascota.image
+            )
+
+            self.delegate?.agregarMascota(mascota)
+
+            DispatchQueue.main.async {
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
     }
     
     @IBOutlet weak var txtNombreMascota: UITextField!
