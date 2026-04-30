@@ -39,7 +39,11 @@ class NuevaCitaViewController: UIViewController, UIPickerViewDelegate, UIPickerV
            
            txtNombreMascota.inputView = picker
            
-           cargarMascotas()
+           // 🔹 Autocompletar dueño con el correo guardado
+               let duenio = UserDefaults.standard.string(forKey: "correo") ?? ""
+               txtNombreDueño.text = duenio
+               
+               cargarMascotas()
        }
 
        // 🔹 Obtener mascotas desde Firestore
@@ -47,7 +51,7 @@ class NuevaCitaViewController: UIViewController, UIPickerViewDelegate, UIPickerV
         let db = Firestore.firestore()
         
         // 🔹 obtenemos el dueño desde UserDefaults
-        let duenio = UserDefaults.standard.string(forKey: "correo ") ?? ""
+        let duenio = UserDefaults.standard.string(forKey: "correo") ?? ""
         
         db.collection("mascotas")
           .whereField("duenio", isEqualTo: duenio)
