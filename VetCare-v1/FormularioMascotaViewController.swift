@@ -10,8 +10,11 @@ protocol FormularioMascotaDelegate: AnyObject {
 }
 
 import UIKit
+import FirebaseFirestore
 
 class FormularioMascotaViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    let db = Firestore.firestore()
 
     weak var delegate: FormularioMascotaDelegate?
     
@@ -48,22 +51,48 @@ class FormularioMascotaViewController: UIViewController, UIImagePickerController
     @IBAction func guardarMascota(_ sender: Any) {
         print("💾 BOTÓN GUARDAR PRESIONADO")
         
-        let mascota = MascotaVM(
-                nombre: txtNombreMascota.text ?? "",
-                especie: txtEspecieMascota.text ?? "",
-                raza: txtRazaMascota.text ?? "",
-                peso: txtPesoMascota.text ?? "",
-                edad: txtEdadMascota.text ?? "",
-                sexo: txtSexoMascota.text ?? "",
-                alergias: txtAlergiasMascota.text ?? "",
-                imagen: imagenMascota.image
+        let correo = UserDefaults.standard.string(forKey: "correo") ?? "sin_correo"
+        
+        let data: [String: Any] = [
+            "nombre": txtNombreMascota.text ?? "",
+                "especie": txtEspecieMascota.text ?? "",
+                "raza": txtRazaMascota.text ?? "",
+                "peso": txtPesoMascota.text ?? "",
+                "edad": txtEdadMascota.text ?? "",
+                "sexo": txtSexoMascota.text ?? "",
+                "alergias": txtAlergiasMascota.text ?? "",
+                "duenio": correo,
+                "createdAt": Timestamp()
+            ]
+            
+            print("📤 Enviando a Firestore...")
+        
+        let docRef = db.collection("mascotas").document()
+
+        docRef.setData(data) { error in
+            if let error = error {
+                print("❌ Error:", error.localizedDescription)
+                return
+            }
+
+            let mascota = MascotaVM(
+                id: docRef.documentID,
+                nombre: self.txtNombreMascota.text ?? "",
+                especie: self.txtEspecieMascota.text ?? "",
+                raza: self.txtRazaMascota.text ?? "",
+                peso: self.txtPesoMascota.text ?? "",
+                edad: self.txtEdadMascota.text ?? "",
+                sexo: self.txtSexoMascota.text ?? "",
+                alergias: self.txtAlergiasMascota.text ?? "",
+                imagen: self.imagenMascota.image
             )
 
-        print("📦 MASCOTA CREADA:", mascota.nombre)
-        
-            delegate?.agregarMascota(mascota)
+            self.delegate?.agregarMascota(mascota)
 
-            navigationController?.popViewController(animated: true)
+            DispatchQueue.main.async {
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
     }
     
     @IBOutlet weak var txtNombreMascota: UITextField!

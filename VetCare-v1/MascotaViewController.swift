@@ -6,9 +6,12 @@
 //
 
 import UIKit
+import FirebaseFirestore
 
 class MascotaViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
+    let db = Firestore.firestore()
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return mascotas.count
     }
@@ -27,6 +30,16 @@ class MascotaViewController: UIViewController, UITableViewDataSource, UITableVie
                 return cell
     }
     
+    func tableView(_ tableView: UITableView,
+                   commit editingStyle: UITableViewCell.EditingStyle,
+                   forRowAt indexPath: IndexPath) {
+        print("🧪 Swipe detectado")
+        
+        if editingStyle == .delete {
+            let mascota = mascotas[indexPath.row]
+            eliminarMascota(id: mascota.id)
+        }
+    }
 
     var mascotas: [MascotaVM] = []
     
@@ -36,9 +49,13 @@ class MascotaViewController: UIViewController, UITableViewDataSource, UITableVie
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("tableViewMascota:", tableViewMascota as Any)
+        
+        print("🔥 viewDidLoad MascotaViewController")
+        
         tableViewMascota.dataSource = self
         tableViewMascota.delegate = self
+        
+        self.obtenerMascotas()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -50,6 +67,61 @@ class MascotaViewController: UIViewController, UITableViewDataSource, UITableVie
                 print("✅ DELEGATE ASIGNADO")
             }
         }
+    
+    func obtenerMascotas() {
+        let correo = UserDefaults.standard.string(forKey: "correo") ?? "sin_correo"
+        print(correo)
+        
+        db.collection("mascotas")
+            .whereField("duenio", isEqualTo: correo)
+            .getDocuments { snapshot, error in
+                
+                if let error = error {
+                    print("❌ Error:", error.localizedDescription)
+                    return
+                }
+
+                guard let documentos = snapshot?.documents else { return }
+
+                self.mascotas.removeAll()
+
+                for doc in documentos {
+                    let data = doc.data()
+
+                    let mascota = MascotaVM(
+                        id: doc.documentID,
+                        nombre: data["nombre"] as? String ?? "",
+                        especie: data["especie"] as? String ?? "",
+                        raza: data["raza"] as? String ?? "",
+                        peso: data["peso"] as? String ?? "",
+                        edad: data["edad"] as? String ?? "",
+                        sexo: data["sexo"] as? String ?? "",
+                        alergias: data["alergias"] as? String ?? "",
+                        imagen: nil
+                    )
+                    print("ID mascota:", doc.documentID)
+                    self.mascotas.append(mascota)
+                }
+                
+
+                DispatchQueue.main.async {
+                    self.tableViewMascota.reloadData()
+                }
+            }
+    }
+    
+    func eliminarMascota(id: String) {
+        print("Eliminando ID:", id)
+        db.collection("mascotas").document(id).delete { error in
+            if let error = error {
+                print("❌ Error al eliminar:", error.localizedDescription)
+            } else {
+                print("🗑 Mascota eliminada")
+                self.obtenerMascotas() // recargar lista
+            }
+        }
+    }
+    
 }
 
 extension MascotaViewController: FormularioMascotaDelegate {
